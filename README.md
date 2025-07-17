@@ -18,27 +18,26 @@ This repository contains a fault-tolerant UDP-based chat system using `ChatNode`
 
 ## Test Scenarios
 
-The integration tests verify:
+The integration tests verify the reliability, ordering guarantees, and security of the chat system:
 
-1. **High packet loss (40%)**
+1. **FIFO Broadcast**  
+   Alice and Bob send FIFO messages to the group. Ensures that messages are received in the correct order per sender.
 
-   * Tests message retransmission and acknowledgment.
+2. **Broadcast under 40% Packet Loss**  
+   Alice broadcasts a message while simulating 40% UDP packet loss. Verifies message delivery resilience despite network unreliability.
 
-2. **Duplicate `msg_id`**
+3. **Causal Broadcast**  
+   Bob sends two causally linked messages, then Alice sends a dependent one. Validates that messages are delivered respecting causal dependencies.
 
-   * Confirms duplicate packets are ignored.
+4. **Private Messaging (Valid Signature)**  
+   Alice sends a private, encrypted message to Bob. Verifies correct encryption and signature using asymmetric cryptography.
 
-3. **Invalid signature**
+5. **Private Messaging with Wrong Password**  
+   A new "Alice" instance with the wrong password tries to send a private message. Ensures that signature verification fails gracefully (i.e., message is rejected or ignored without crash).
 
-   * Malicious or corrupted messages are rejected.
+6. **Shutdown and Cleanup**  
+   All nodes are gracefully stopped at the end of the tests.
 
-4. **Wrong-key private message**
-
-   * Confirms a decryption failure is handled gracefully.
-
-5. **Total loss scenario**
-
-   * Forces the sender to give up after repeated retries.
 
 ---
 
